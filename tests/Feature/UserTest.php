@@ -14,7 +14,7 @@ class UserTest extends TestCase
         /**
          * @var User
          */
-        $user = factory(User::class)->create();
+        $user = User::factory()->make();
 
         $this->json('POST','/user/create', [
             'first_name' => $user->first_name,

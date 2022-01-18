@@ -54,4 +54,15 @@ class User extends Model
         return "$this->first_name $this->last_name";
     }
 
+    /**
+     * Return a specific user by their email address
+     *
+     * @param string $email
+     * @return User
+     */
+    public static function findByEmail(string $email): User
+    {
+        return static::where('email', $email)->first();
+    }
+
 }

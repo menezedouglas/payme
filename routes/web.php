@@ -17,4 +17,11 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-require_once __DIR__ . '/user.php';
+$router->group(['prefix' => 'user', 'as' => 'user.'], function () use ($router) {
+
+    $router->post('create', [
+        'as' => 'create',
+        'uses' => 'UserController@store'
+    ]);
+
+});
