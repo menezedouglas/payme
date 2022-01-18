@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Lumen\Auth\Authorizable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+/**
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property int $cpf
+ * @property int|null $cnpj
+ * @property int $user_type_id
+ */
+class User extends Model
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use SoftDeletes, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +25,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'name', 'email',
+        'first_name',
+        'last_name',
+        'email',
+        'cpf',
+        'cnpj',
+        'user_type_id'
     ];
 
     /**
@@ -28,6 +39,19 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $hidden = [
-        'password',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
+
+    /**
+     * Generates the user full name
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return "$this->first_name $this->last_name";
+    }
+
 }
