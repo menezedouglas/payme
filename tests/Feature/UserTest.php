@@ -16,12 +16,12 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST','/user/create', [
+        $this->json('POST', '/user/create', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
             'cpf' => $user->cpf,
-            'password' => $user->password
+            'password' => 'password'
         ]);
 
         $this->assertResponseOk();
@@ -35,57 +35,119 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST','/user/create', [
+        $this->json('POST', '/user/create', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
             'cpf' => $user->cpf,
             'cnpj' => $user->cnpj,
-            'password' => $user->password
-        ]);
-
-        $this->assertResponseOk();
+            'password' => 'password'
+        ])->assertResponseOk();
     }
 
     /** @test */
     public function getAllUsers()
     {
-        $this->assertTrue(true);
+        $this->json('GET', '/user')->assertResponseOk();
     }
 
     /** @test */
     public function getUserById()
     {
-        $this->assertTrue(true);
+        $endpoint = '/user/show/:id';
+
+        $users = $this->json('GET', '/user')->response->original->toArray();
+
+        $user = $users[rand(
+                min(
+                    array_keys(
+                        array_column($users, 'id')
+                    )
+                ),
+                max(
+                    array_keys(
+                        array_column($users, 'id')
+                    )
+                )
+            )];
+
+        $response = $this->json('GET', str_replace(':id', $user['id'], $endpoint))->response->original->toArray();
+
+        $this->assertTrue(
+            $user['id'] === $response['id']
+        );
     }
 
     /** @test */
     public function shouldBeWithFirstNameRequired()
     {
-        $this->assertTrue(true);
+        /**
+         * @var User
+         */
+        $user = User::factory()->make();
+
+        $this->json('POST', '/user/create', [
+            'first_name' => null,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'cpf' => $user->cpf,
+            'cnpj' => $user->cnpj,
+            'password' => 'password'
+        ])->assertResponseStatus(422);
     }
 
     /** @test */
     public function shouldBeWithLastNameRequired()
     {
-        $this->assertTrue(true);
+        /**
+         * @var User
+         */
+        $user = User::factory()->make();
+
+        $this->json('POST', '/user/create', [
+            'first_name' => $user->first_name,
+            'last_name' => null,
+            'email' => $user->email,
+            'cpf' => $user->cpf,
+            'cnpj' => $user->cnpj,
+            'password' => 'password'
+        ])->assertResponseStatus(422);
     }
 
     /** @test */
     public function shouldBeWithEmailRequired()
     {
-        $this->assertTrue(true);
+        /**
+         * @var User
+         */
+        $user = User::factory()->make();
+
+        $this->json('POST', '/user/create', [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => null,
+            'cpf' => $user->cpf,
+            'cnpj' => $user->cnpj,
+            'password' => 'password'
+        ])->assertResponseStatus(422);
     }
 
     /** @test */
-    public function shouldBeWithCpfRequiredForAnyUserType()
+    public function shouldBeWithCpfRequired()
     {
-        $this->assertTrue(true);
+        /**
+         * @var User
+         */
+        $user = User::factory()->make();
+
+        $this->json('POST', '/user/create', [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'cpf' => null,
+            'cnpj' => $user->cnpj,
+            'password' => 'password'
+        ])->assertResponseStatus(422);
     }
 
-    /** @test */
-    public function shouldBeWithCnpjNullable()
-    {
-        $this->assertTrue(true);
-    }
 }

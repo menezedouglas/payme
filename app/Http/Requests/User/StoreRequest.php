@@ -17,8 +17,8 @@ class StoreRequest extends BaseRequest
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email:rfc', // Add "dns" into email rules for production
-            'cpf' => 'required',
+            'email' => 'required|unique:users|email:rfc', // Add ",dns" into email rules for production
+            'cpf' => 'required|unique:users',
             'cnpj' => 'nullable',
             'password' => 'required|string|min:6|max:20'
         ];

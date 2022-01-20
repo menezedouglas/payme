@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,16 +23,26 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+
+        $withCnpj = [true, false][rand(0, 1)];
+
+        $userType = UserType::where([
+            'cpf_required' => true,
+            'cnpj_required' => $withCnpj
+        ])->first();
+
+
         return [
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
             'cpf' => rand(10000000000, 99999999999),
-            'cnpj' => rand(
+            'cnpj' => $withCnpj ? rand(
                 10000000000000,
                 99999999999999
-            ),
-            'password' => 'password'
+            ) : null,
+            'user_type_id' => $userType->id,
+            'password' => Hash::make('password')
         ];
     }
 }

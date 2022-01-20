@@ -32,6 +32,9 @@ class BaseRequest extends Validator implements BaseRequestInterface
      */
     public function all(): array
     {
+        if(!$this->validate())
+            throw new Exception(json_encode($this->validator->errors()->messages()), 422);
+
         return $this->request->all();
     }
 
@@ -73,9 +76,6 @@ class BaseRequest extends Validator implements BaseRequestInterface
     public function __construct(Request $request)
     {
         $this->request = $request;
-
-        if(!$this->validate())
-            throw new Exception(json_encode($this->validator->errors()->messages()), 422);
     }
 
     /**
@@ -88,7 +88,6 @@ class BaseRequest extends Validator implements BaseRequestInterface
         $this->validator = Validator::make($this->request->all(), $this->rules(), $this->messages(), $this->attributes());
 
         return !$this->validator->fails();
-
     }
 
 }

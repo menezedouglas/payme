@@ -79,21 +79,31 @@ class UserController extends Controller
     }
 
     /**
+     * Show a specific user
+     *
+     * @param int $id
      * @return JsonResponse
+     * @throws UserNotFoundException
      */
-    public function show(): JsonResponse
+    public function show(int $id): JsonResponse
     {
         try {
-            return response()->json([]);
+            if(!$user = $this->user->find($id))
+                abort(404, 'Usuário não encontrado');
+
+            return response()->json($user);
         } catch (\Exception $error) {
-            return response(['error' => $error->getMessage()], 500);
+            throw new UserNotFoundException($error);
         }
     }
 
     /**
+     * Edit a authenticated user
+     *
+     * @param int $id
      * @return JsonResponse
      */
-    public function edit()
+    public function edit(int $id)
     {
         try {
             return response()->json([]);

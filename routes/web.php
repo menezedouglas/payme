@@ -19,6 +19,16 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'user', 'as' => 'user.'], function () use ($router) {
 
+    $router->get('', [
+        'as' => 'all',
+        'uses' => 'UserController@index'
+    ]);
+
+    $router->get('/show/{id}', [
+        'as' => 'show',
+        'uses' => 'UserController@show'
+    ]);
+
     $router->post('create', [
         'as' => 'create',
         'uses' => 'UserController@store'
