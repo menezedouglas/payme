@@ -6,6 +6,7 @@ use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property int $id
@@ -40,5 +41,15 @@ class UserType extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    /**
+     * Return all the users related to this user type
+     *
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'user_type_id', 'id');
+    }
 
 }

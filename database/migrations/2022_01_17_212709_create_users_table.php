@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('cpf');
             $table->unsignedBigInteger('cnpj')->nullable();
             $table->foreignId('user_type_id')->constrained();
+            $table->string('password');
             $table->timestamps();
             $table->softDeletes();
         });

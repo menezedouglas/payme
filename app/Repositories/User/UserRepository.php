@@ -9,6 +9,7 @@ use App\Models\UserType;
 
 use App\Exceptions\User\UserNotFoundException;
 use App\Exceptions\UserType\UserTypeNotFoundException;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository implements UserInterface
 {
@@ -43,12 +44,12 @@ class UserRepository implements UserInterface
     public function create(array $data): bool
     {
         $userType = UserType::where([
-            'cpf_required' => !!$data['cpf'],
-            'cnpj_required' => !!$data['cnpj']
+            'cpf_required' => array_key_exists('cpf', $data) ? !!$data['cpf'] : false,
+            'cnpj_required' => array_key_exists('cnpj', $data) ? !!$data['cnpj'] : false
         ])->first();
 
         if (!$userType)
-            throw new UserTypeNotFoundException();
+            abort(404, 'Não foi possível identificar o tipo do usuário!');
 
         $user = new User();
 
@@ -56,8 +57,9 @@ class UserRepository implements UserInterface
         $user->last_name = $data['last_name'];
         $user->email = $data['email'];
         $user->cpf = $data['cpf'];
-        $user->cnpj = $data['cnpj'];
+        $user->cnpj = array_key_exists('cnpj', $data) ? $data['cnpj'] : null;
         $user->user_type_id = $userType->id;
+        $user->password = Hash::make($data['password']);
 
         if ($user->save())
             return true;
@@ -76,21 +78,21 @@ class UserRepository implements UserInterface
     {
 
         if (!$user = $this->find($id))
-            throw new UserNotFoundException();
+            abort(404, 'Não foi possível encontrar o usuário!');
 
         $userType = UserType::where([
-            'cpf_required' => !!$data['cpf'],
-            'cnpj_required' => !!$data['cnpj']
+            'cpf_required' => array_key_exists('cpf', $data) ? !!$data['cpf'] : false,
+            'cnpj_required' => array_key_exists('cnpj', $data) ? !!$data['cnpj'] : false
         ])->first();
 
         if (!$userType)
-            throw new UserTypeNotFoundException();
+            abort(404, 'Não foi possível identificar o tipo do usuário!');
 
         $user->first_name = $data['first_name'];
         $user->last_name = $data['last_name'];
         $user->email = $data['email'];
         $user->cpf = $data['cpf'];
-        $user->cnpj = $data['cnpj'];
+        $user->cnpj = array_key_exists('cnpj', $data) ? $data['cnpj'] : null;
         $user->user_type_id = $userType->id;
 
         $user->save();
@@ -107,7 +109,7 @@ class UserRepository implements UserInterface
     public function delete(int $id): bool
     {
         if(!$user = $this->find($id))
-            throw new UserNotFoundException();
+            abort(404, 'Não foi possível encontrar o usuário!');
 
         if(!$user->delete())
             return false;

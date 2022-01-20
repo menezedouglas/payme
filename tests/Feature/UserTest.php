@@ -20,14 +20,31 @@ class UserTest extends TestCase
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
-            'cpf' => $user->cpf
-        ])->assertResponseOk();
+            'cpf' => $user->cpf,
+            'password' => $user->password
+        ]);
+
+        $this->assertResponseOk();
     }
 
     /** @test */
     public function createUserWithCpfAndCNPJ()
     {
-        $this->assertTrue(true);
+        /**
+         * @var User
+         */
+        $user = User::factory()->make();
+
+        $this->json('POST','/user/create', [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'cpf' => $user->cpf,
+            'cnpj' => $user->cnpj,
+            'password' => $user->password
+        ]);
+
+        $this->assertResponseOk();
     }
 
     /** @test */

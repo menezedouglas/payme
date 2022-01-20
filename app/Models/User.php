@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -39,6 +40,7 @@ class User extends Model
      * @var array
      */
     protected $hidden = [
+        'password',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -52,6 +54,16 @@ class User extends Model
     public function getFullName()
     {
         return "$this->first_name $this->last_name";
+    }
+
+    /**
+     * Return a related user type
+     *
+     * @return BelongsTo
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(UserType::class, 'user_type_id', 'id');
     }
 
     /**
