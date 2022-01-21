@@ -18,7 +18,7 @@ use App\Exceptions\Transfer\{
     CannotCreateNewTransferException
 };
 
-use App\Http\Requests\Auth\NewTransferRequest;
+use App\Http\Requests\Account\NewTransferRequest;
 
 class FinancialController extends Controller
 {

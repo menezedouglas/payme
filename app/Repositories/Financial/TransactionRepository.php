@@ -59,16 +59,7 @@ class TransactionRepository implements TransactionInterface
 
         $transaction->payer_account_id = $data['payer_account_id'];
         $transaction->payee_account_id = $data['payee_account_id'];
-        $transaction->value = AccountRepository::floatToData((float) $data['value']);
-
-        $payerAccount = $this->account->find($data['payer_account_id']);
-        $payeeAccount = $this->account->find($data['payee_account_id']);
-
-        $payerAccount->balance_value -= AccountRepository::floatToData((float) $data['value']);
-        $payeeAccount->balance_value += AccountRepository::floatToData((float) $data['value']);
-
-        $payerAccount->save();
-        $payeeAccount->save();
+        $transaction->value = $data['value'];
 
         return !!$transaction->save();
     }

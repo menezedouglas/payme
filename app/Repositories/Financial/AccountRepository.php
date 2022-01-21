@@ -40,7 +40,7 @@ class AccountRepository implements AccountInterface
         $account = new Account();
 
         $account->user_id = $data['user_id'];
-        $account->balance_value = static::floatToData((float) $data['balance_value']);
+        $account->balance_value = $data['balance_value'];
 
         return !!$account->save();
     }
@@ -57,7 +57,7 @@ class AccountRepository implements AccountInterface
         if(!$account = $this->find($id))
             abort(404, 'A conta não foi encontrada');
 
-        $account->balance_value = static::floatToData((float) $data['balance_value']);
+        $account->balance_value = $data['balance_value'];
 
         return !!$account->save();
     }
