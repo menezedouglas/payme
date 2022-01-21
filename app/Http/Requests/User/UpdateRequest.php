@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Http\Requests\BaseRequest;
 
-class StoreRequest extends BaseRequest
+class UpdateRequest extends BaseRequest
 {
 
     /**
@@ -17,8 +17,8 @@ class StoreRequest extends BaseRequest
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|unique:users|email:rfc', // Add ",dns" into email rules for production
-            'cpf' => 'required|unique:users',
+            'email' => 'required|email:rfc', // Add ",dns" into email rules for production
+            'cpf' => 'required',
             'cnpj' => 'nullable',
             'password' => 'required|string|min:6|max:20'
         ];
@@ -40,9 +40,7 @@ class StoreRequest extends BaseRequest
             'last_name.max' => 'É permitido até 255 caracteres para o :attribute',
             'email.required' => 'O :attribute é obrigatório',
             'email.email' => 'O :attribute informado é inválido',
-            'email.unique' => 'O :attribute informado é inválido',
             'cpf.required' => 'O :attribute é obrigatório',
-            'cpf.unique' => 'O :attribute informado é inválido',
             'password.required' => 'A :attribute é obrigatória',
             'password.string' => 'A :attribute informado é inválida',
             'password.min' => 'A :attribute precisa ter no mínimo 6 caracteres',

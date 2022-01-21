@@ -11,8 +11,27 @@ use App\Exceptions\User\UserNotFoundException;
 use App\Exceptions\UserType\UserTypeNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
+use App\Repositories\Financial\AccountInterface;
+
 class UserRepository implements UserInterface
 {
+
+    /**
+     * Account Repository Interface
+     *
+     * @var AccountInterface $account
+     */
+    protected AccountInterface $account;
+
+    /**
+     * Constructor Method
+     *
+     * @param AccountInterface $account
+     */
+    public function __construct(AccountInterface $account)
+    {
+        $this->account = $account;
+    }
 
     /**
      * Return all users
@@ -71,7 +90,14 @@ class UserRepository implements UserInterface
         $user->user_type_id = $userType->id;
         $user->password = Hash::make($data['password']);
 
-        return !!$user->save();
+        $userSuccess = !!$user->save();
+
+        $accountSuccess = $this->account->create([
+            'user_id' => $user->id,
+            'balance_value' => 0
+        ]);
+
+        return $userSuccess && $accountSuccess;
     }
 
     /**
@@ -102,9 +128,8 @@ class UserRepository implements UserInterface
         $user->cnpj = array_key_exists('cnpj', $data) ? $data['cnpj'] : null;
         $user->user_type_id = $userType->id;
 
-        $user->save();
+        return !!$user->save();
 
-        return true;
     }
 
     /**

@@ -10,14 +10,19 @@ use App\Http\Controllers\Controller;
 use App\Repositories\User\UserInterface;
 
 use App\Http\Requests\User\{
-    StoreRequest
+    StoreRequest,
+    UpdateRequest
 };
+
+use App\Exceptions\Exception;
 
 use App\Exceptions\User\{
     UserNotFoundException,
     CannotCreateUserException,
-    CannotGetAllUsersException
+    CannotGetAllUsersException,
+    CannotEditUserException
 };
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -36,8 +41,6 @@ class UserController extends Controller
      */
     public function __construct(UserInterface $user)
     {
-        $this->middleware('auth:cliente,lojista', ['except' => 'store']);
-
         $this->user = $user;
     }
 
@@ -82,7 +85,7 @@ class UserController extends Controller
     }
 
     /**
-     * Show a specific user
+     * Show the authenticated or a specific user
      *
      * @param int $id
      * @return JsonResponse
@@ -91,8 +94,8 @@ class UserController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            if(!$user = $this->user->find($id))
-                abort(404, 'Usuário não encontrado');
+            if (!$user = $this->getUser($id))
+                throw new UserNotFoundException();
 
             return response()->json($user);
         } catch (\Exception $error) {
@@ -101,17 +104,43 @@ class UserController extends Controller
     }
 
     /**
-     * Edit a authenticated user
+     * Edit the authenticated or a specified user
      *
-     * @param int $id
+     * @param int|null $id
+     * @param UpdateRequest $request
      * @return JsonResponse
+     * @throws CannotEditUserException|UserNotFoundException
      */
-    public function edit(int $id)
+    public function edit(?int $id = null, UpdateRequest $request): JsonResponse
     {
         try {
+            if (!$user = $this->getUser($id))
+                throw new UserNotFoundException();
+
+            if ($this->user->where([
+                'email' => $request->input('email'),
+                ['id', '<>', $user->id]
+            ])->exists())
+                throw new CannotEditUserException(null, 'O E-mail informado já está sendo utilizado', 400);
+
+            if ($this->user->where([
+                'cpf' => $request->input('cpf'),
+                ['id', '<>', $user->id]
+            ])->exists())
+                throw new CannotEditUserException(null, 'O CPF informado já está sendo utilizado', 400);
+
+            if ($this->user->where([
+                'cnpj' => $request->input('cnpj'),
+                ['id', '<>', $user->id]
+            ])->exists())
+                throw new CannotEditUserException(null, 'O CNPJ informado já está sendo utilizado', 400);
+
+            if (!$this->user->update($request->all(), $user->id))
+                throw new CannotEditUserException();
+
             return response()->json([]);
-        } catch (\Exception $error) {
-            return response(['error' => $error->getMessage()], 500);
+        } catch (Exception $error) {
+            throw new CannotEditUserException($error);
         }
     }
 
@@ -124,6 +153,23 @@ class UserController extends Controller
             return response()->json([]);
         } catch (\Exception $error) {
             return response(['error' => $error->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Return user by id
+     *
+     * @param int|null $id
+     * @return User|null
+     */
+    protected function getUser(?int $id): ?User
+    {
+        switch ($id) {
+            case null:
+                return auth()->user();
+
+            default:
+                return $this->user->find($id);
         }
     }
 }

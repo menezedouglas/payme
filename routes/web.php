@@ -19,23 +19,25 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'auth', 'as' => 'auth.'], function () use ($router) {
 
-    $router->post('/login', [
+    $router->post('', [
         'as' => 'login',
         'uses' => 'AuthController@login'
     ]);
 
 });
 
-$router->group(['prefix' => 'user', 'as' => 'user.'], function () use ($router) {
+$router->group(['prefix' => 'user[/{id}]', 'as' => 'user.'], function () use ($router) {
 
     $router->get('', [
         'as' => 'all',
-        'uses' => 'UserController@index'
+        'uses' => 'UserController@index',
+        'middleware' => 'auth:cliente,lojista'
     ]);
 
-    $router->get('/{id}', [
+    $router->get('', [
         'as' => 'show',
-        'uses' => 'UserController@show'
+        'uses' => 'UserController@show',
+        'middleware' => 'auth:cliente,lojista'
     ]);
 
     $router->post('', [
@@ -45,12 +47,36 @@ $router->group(['prefix' => 'user', 'as' => 'user.'], function () use ($router) 
 
     $router->put('', [
         'as' => 'edit',
-        'uses' => 'UserController@edit'
+        'uses' => 'UserController@edit',
+        'middleware' => 'auth:cliente,lojista'
     ]);
 
-    $router->delete('/{id}', [
+    $router->delete('', [
         'as' => 'delete',
-        'uses' => 'UserController@delete'
+        'uses' => 'UserController@delete',
+        'middleware' => 'auth:cliente,lojista'
+    ]);
+
+});
+
+$router->group(['prefix' => 'financial', 'as' => 'financial.'], function () use ($router) {
+
+    $router->get('', [
+        'as' => 'account',
+        'uses' => 'FinancialController@index',
+        'middleware' => 'auth:cliente,lojista'
+    ]);
+
+    $router->post('transfer', [
+        'as' => 'account',
+        'uses' => 'FinancialController@newTransfer',
+        'middleware' => ['auth:cliente,lojista', 'transfer']
+    ]);
+
+    $router->delete('', [
+        'as' => 'account.delete',
+        'uses' => 'FinancialController@deleteAccount',
+        'middleware' => 'auth:cliente,lojista'
     ]);
 
 });

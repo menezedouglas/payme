@@ -106,28 +106,36 @@ class Exception extends BasicException implements ExceptionInterface
     /**
      * Constructor method
      *
-     * @param string $message
-     * @param int $code
+     * @param BasicException|null $exception
+     * @param string|null $message
+     * @param int|null $code
      */
-    public function __construct(BasicException $exception)
-    {
+    public function __construct(
+        ?BasicException $exception = null,
+        ?string $message = null,
+        ?int $code = null
+    ) {
 
-        $this->exception = $exception;
+        if ($exception) {
+            $this->exception = $exception;
 
-        if(!method_exists($this->exception, 'getStatusCode')) {
-            if(array_key_exists($this->exception->getCode(), $this->httpStatusMessages)) {
-                $this->code = $this->exception->getCode();
-                $this->message = $this->exception->getMessage();
+            if (!method_exists($this->exception, 'getStatusCode')) {
+                if (array_key_exists($this->exception->getCode(), $this->httpStatusMessages)) {
+                    $this->code = $this->exception->getCode();
+                    $this->message = $this->exception->getMessage();
+                } else {
+                    $this->message = $this->message ?? $this->httpStatusMessages[$this->code];
+                }
             } else {
-                $this->message = $this->message ?? $this->httpStatusMessages[$this->code];
+                $this->code = $this->exception->getStatusCode();
+                $this->message = $this->exception->getMessage();
             }
-        } else {
-            $this->code = $this->exception->getStatusCode();
-            $this->message = $this->exception->getMessage();
+        } else if ($message || $code) {
+            $this->message = $message ?? $this->message;
+            $this->code = $code ?? $this->code;
         }
 
         parent::__construct($this->message, $this->code);
-
     }
 
 
@@ -138,7 +146,7 @@ class Exception extends BasicException implements ExceptionInterface
      */
     public function report(): ?bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -153,10 +161,9 @@ class Exception extends BasicException implements ExceptionInterface
             'code' => $this->code
         ];
 
-        if(strtolower(env('APP_ENV')) === 'testing')
+        if (strtolower(env('APP_ENV')) === 'testing')
             $response['exception'] = $this->exception;
 
         return response()->json($response, $this->code);
     }
-
 }

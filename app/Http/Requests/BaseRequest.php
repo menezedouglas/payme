@@ -39,6 +39,20 @@ class BaseRequest extends Validator implements BaseRequestInterface
     }
 
     /**
+     * Return specified and valid input
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function input(string $key)
+    {
+        if(!$this->validate())
+            throw new Exception(json_encode($this->validator->errors()->messages()), 422);
+
+        return $this->request->input($key);
+    }
+
+    /**
      * Return rules for request validation
      *
      * @return string[]
