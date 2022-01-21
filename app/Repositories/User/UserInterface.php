@@ -23,6 +23,13 @@ interface UserInterface
     public function find(int $id): ?User;
 
     /**
+     * Return a query for searching users
+     *
+     * @param array $query
+     */
+    public function where(array $query);
+
+    /**
      * Create a new user
      *
      * @param array $data

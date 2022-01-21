@@ -118,9 +118,9 @@ class Exception extends BasicException implements ExceptionInterface
             if(array_key_exists($this->exception->getCode(), $this->httpStatusMessages)) {
                 $this->code = $this->exception->getCode();
                 $this->message = $this->exception->getMessage();
+            } else {
+                $this->message = $this->message ?? $this->httpStatusMessages[$this->code];
             }
-
-            $this->message = $this->message ?? $this->httpStatusMessages[$this->code];
         } else {
             $this->code = $this->exception->getStatusCode();
             $this->message = $this->exception->getMessage();
@@ -149,11 +149,11 @@ class Exception extends BasicException implements ExceptionInterface
     public function render(): JsonResponse
     {
         $response =  [
-            'message' => $this->message,
+            'message' => $this->code === 422 ? json_decode($this->message) : $this->message,
             'code' => $this->code
         ];
 
-        if(strtolower(env('APP_ENV')) !== 'production')
+        if(strtolower(env('APP_ENV')) === 'testing')
             $response['exception'] = $this->exception;
 
         return response()->json($response, $this->code);

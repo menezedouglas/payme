@@ -36,6 +36,8 @@ class UserController extends Controller
      */
     public function __construct(UserInterface $user)
     {
+        $this->middleware('auth:cliente,lojista', ['except' => 'store']);
+
         $this->user = $user;
     }
 
@@ -74,6 +76,7 @@ class UserController extends Controller
 
             return response()->json([]);
         } catch (\Exception $error) {
+            DB::rollBack();
             throw new CannotCreateUserException($error);
         }
     }

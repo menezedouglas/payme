@@ -16,7 +16,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -35,7 +35,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -48,15 +48,25 @@ class UserTest extends TestCase
     /** @test */
     public function getAllUsers()
     {
-        $this->json('GET', '/user')->assertResponseOk();
+        /**
+         * @var User
+         */
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->json('GET', '/user')->assertResponseOk();
     }
 
     /** @test */
     public function getUserById()
     {
-        $endpoint = '/user/show/:id';
+        $endpoint = '/user/:id';
 
-        $users = $this->json('GET', '/user')->response->original->toArray();
+        /**
+         * @var User
+         */
+        $user = User::factory()->create();
+
+        $users = $this->actingAs($user)->json('GET', '/user')->response->original->toArray();
 
         $user = $users[rand(
                 min(
@@ -86,7 +96,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => null,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -104,7 +114,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => $user->first_name,
             'last_name' => null,
             'email' => $user->email,
@@ -122,7 +132,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => null,
@@ -140,7 +150,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user/create', [
+        $this->json('POST', '/user', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,

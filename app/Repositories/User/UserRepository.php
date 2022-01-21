@@ -36,6 +36,16 @@ class UserRepository implements UserInterface
     }
 
     /**
+     * Return a query for searching users
+     *
+     * @param array $query
+     */
+    public function where(array $query)
+    {
+        return User::where($query);
+    }
+
+    /**
      * Create a new user
      *
      * @param array $data
@@ -61,10 +71,7 @@ class UserRepository implements UserInterface
         $user->user_type_id = $userType->id;
         $user->password = Hash::make($data['password']);
 
-        if ($user->save())
-            return true;
-
-        return false;
+        return !!$user->save();
     }
 
     /**
@@ -111,9 +118,6 @@ class UserRepository implements UserInterface
         if(!$user = $this->find($id))
             abort(404, 'Não foi possível encontrar o usuário!');
 
-        if(!$user->delete())
-            return false;
-
-        return true;
+        return !!$user->delete();
     }
 }
