@@ -2,6 +2,7 @@
 
 namespace App\Services\Financial;
 
+use App\Models\Financial\Transaction;
 use App\Models\User;
 use App\Repositories\Financial\{
     AccountInterface,
@@ -39,26 +40,48 @@ class Transference
     }
 
     /**
+     * Execute the transaction
      *
+     * @return bool
      */
-    public function make(User $from, User $to, int $amount): bool
+    public function execute(Transaction $transaction): bool
     {
-        $value = AccountRepository::floatToData((float) $amount);
+        $payerAccount = $transaction->payerAccount;
+        $payeeAccount = $transaction->payeeAccount;
 
-        $payerAccount = $from->account;
-        $payeeAccount = $to->account;
-
-        $payerAccount->balance_value -= $value;
-        $payeeAccount->balance_value += $value;
+        $payerAccount->balance_value -= $transaction->amount;
+        $payeeAccount->balance_value += $transaction->amount;
 
         $payerAccount->save();
         $payeeAccount->save();
 
-        return $this->transaction->create([
-            'value' => $value,
-            'payer_account_id' => $from->account->id,
-            'payee_account_id' => $to->account->id,
-        ]);
+        $transaction->status = 'complete';
+        return !!$transaction->save();
+    }
+
+    /**
+     * Rollback the specified transaction
+     *
+     * @param Transaction $transaction
+     * @return bool
+     */
+    public function rollback(Transaction $transaction): bool
+    {
+        $value = $transaction->value;
+
+        $payerAccount = $transaction->payerAccount;
+        $payeeAccount = $transaction->payeeAccount;
+
+        $payerAccount->balance_value += $value;
+        $payeeAccount->balance_value -= $value;
+
+        $payerAccount->save();
+        $payeeAccount->save();
+
+        $transaction->status = 'reverted';
+        $transaction->save();
+
+        return !!$this->transaction->delete($transaction->id);
     }
 
 }

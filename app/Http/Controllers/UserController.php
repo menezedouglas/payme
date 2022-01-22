@@ -129,11 +129,13 @@ class UserController extends Controller
             ])->exists())
                 throw new CannotEditUserException(null, 'O CPF informado já está sendo utilizado', 400);
 
-            if ($this->user->where([
-                'cnpj' => $request->input('cnpj'),
-                ['id', '<>', $user->id]
-            ])->exists())
-                throw new CannotEditUserException(null, 'O CNPJ informado já está sendo utilizado', 400);
+            if($request->input('cnpj')) {
+                if ($this->user->where([
+                    'cnpj' => $request->input('cnpj'),
+                    ['id', '<>', $user->id]
+                ])->exists())
+                    throw new CannotEditUserException(null, 'O CNPJ informado já está sendo utilizado', 400);
+            }
 
             if (!$this->user->update($request->all(), $user->id))
                 throw new CannotEditUserException();

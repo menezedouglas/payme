@@ -16,7 +16,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -35,7 +35,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -53,35 +53,23 @@ class UserTest extends TestCase
          */
         $user = User::factory()->create();
 
-        $this->actingAs($user)->json('GET', '/user')->assertResponseOk();
+        $this->actingAs($user)->json('GET', '/users')->assertResponseOk();
     }
 
     /** @test */
     public function getUserById()
     {
-        $endpoint = '/user/:id';
-
         /**
          * @var User
          */
         $user = User::factory()->create();
 
-        $users = $this->actingAs($user)->json('GET', '/user')->response->original->toArray();
-
-        $user = $users[rand(
-                min(
-                    array_keys(
-                        array_column($users, 'id')
-                    )
-                ),
-                max(
-                    array_keys(
-                        array_column($users, 'id')
-                    )
-                )
-            )];
-
-        $response = $this->json('GET', str_replace(':id', $user['id'], $endpoint))->response->original->toArray();
+        $response = $this
+            ->actingAs($user)
+            ->json('GET', str_replace(':id', $user['id'], '/user/:id'))
+            ->response
+            ->original
+            ->toArray();
 
         $this->assertTrue(
             $user['id'] === $response['id']
@@ -96,7 +84,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => null,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -114,7 +102,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => $user->first_name,
             'last_name' => null,
             'email' => $user->email,
@@ -132,7 +120,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => null,
@@ -150,7 +138,7 @@ class UserTest extends TestCase
          */
         $user = User::factory()->make();
 
-        $this->json('POST', '/user', [
+        $this->json('POST', '/users', [
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,

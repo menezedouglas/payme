@@ -10,7 +10,7 @@ use App\Repositories\Financial\{
 };
 
 use App\Exceptions\Account\{
-    NotFoundException,
+    AccountNotFoundException,
     CannotDeleteException
 };
 
@@ -52,18 +52,30 @@ class FinancialController extends Controller
      * Return financial account details of authenticated user
      *
      * @return JsonResponse
-     * @throws NotFoundException
+     * @throws AccountNotFoundException
      */
     public function index(): JsonResponse
     {
         try {
 
-            dd(auth()->user()->account);
+            $with = [];
+
+            switch (auth()->user()->type->name) {
+                case 'cliente': {
+                    $with =['payments', 'receipts'];
+                    break;
+                }
+                case 'lojista': {
+                    $with = ['receipts'];
+                }
+            }
 
             return response()->json(
+                auth()->user()->account()->with($with)->get()
             );
+
         } catch (\Exception $error) {
-            throw new NotFoundException($error);
+            throw new AccountNotFoundException($error);
         }
     }
 
@@ -82,12 +94,15 @@ class FinancialController extends Controller
      * Exclude financial account of authenticated user
      *
      * @return JsonResponse
-     * @throws CannotDeleteException
+     * @throws CannotDeleteException|AccountNotFoundException
      */
     public function deleteAccount(): JsonResponse
     {
         try {
-            auth()->user()->account->delete();
+            if(!$account = auth()->user()->account)
+                throw new AccountNotFoundException();
+
+            $this->account->delete($account->id);
 
             return response()->json([]);
         } catch (\Exception $error) {

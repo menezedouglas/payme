@@ -17,7 +17,8 @@ class CreateFinancialTransactionsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('payer_account_id');
             $table->unsignedBigInteger('payee_account_id');
-            $table->bigInteger('value');
+            $table->unsignedBigInteger('amount');
+            $table->string('status');
             $table->timestamps();
             $table->softDeletes();
 

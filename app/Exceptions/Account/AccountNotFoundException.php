@@ -4,7 +4,7 @@ namespace App\Exceptions\Account;
 
 use App\Exceptions\Exception;
 
-class NotFoundException extends Exception
+class AccountNotFoundException extends Exception
 {
 
     /**

@@ -26,7 +26,7 @@ $router->group(['prefix' => 'auth', 'as' => 'auth.'], function () use ($router) 
 
 });
 
-$router->group(['prefix' => 'user[/{id}]', 'as' => 'user.'], function () use ($router) {
+$router->group(['prefix' => 'users', 'as' => 'users.'], function () use ($router) {
 
     $router->get('', [
         'as' => 'all',
@@ -34,15 +34,19 @@ $router->group(['prefix' => 'user[/{id}]', 'as' => 'user.'], function () use ($r
         'middleware' => 'auth:cliente,lojista'
     ]);
 
+    $router->post('', [
+        'as' => 'create',
+        'uses' => 'UserController@store'
+    ]);
+
+});
+
+$router->group(['prefix' => 'user[/{id}]', 'as' => 'user.'], function () use ($router) {
+
     $router->get('', [
         'as' => 'show',
         'uses' => 'UserController@show',
         'middleware' => 'auth:cliente,lojista'
-    ]);
-
-    $router->post('', [
-        'as' => 'create',
-        'uses' => 'UserController@store'
     ]);
 
     $router->put('', [
@@ -70,7 +74,7 @@ $router->group(['prefix' => 'financial', 'as' => 'financial.'], function () use 
     $router->post('transfer', [
         'as' => 'account',
         'uses' => 'FinancialController@newTransfer',
-        'middleware' => ['auth:cliente,lojista', 'transfer']
+        'middleware' => ['auth:cliente', 'transfer']
     ]);
 
     $router->delete('', [

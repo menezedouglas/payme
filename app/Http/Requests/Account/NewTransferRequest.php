@@ -28,8 +28,11 @@ class NewTransferRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'O :attribute é obrigatório',
-            'password.required' => 'A :attribute é obrigatória'
+            'value.required' => 'O :attribute é obrigatório',
+            'value.numeric' => 'O :attribute é inválido',
+            'value.min' => 'O :attribute precisa ser maior ou igual a 1',
+            'to.required' => 'O :attribute é obrigatório',
+            'to.numeric' => 'O :attribute é inválido'
         ];
     }
 
@@ -41,8 +44,8 @@ class NewTransferRequest extends BaseRequest
     public function attributes(): array
     {
         return [
-            'email' => 'E-mail',
-            'password' => 'Senha'
+            'value' => 'Valor',
+            'to' => 'Beneficiário',
         ];
     }
 

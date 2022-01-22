@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Http;
+use App\Exceptions\Transfer\TransferNoAuthorizedException;
 
 class Transference
 {
@@ -15,7 +17,11 @@ class Transference
      */
     public function handle($request, Closure $next)
     {
-        dd($request->all());
+        $response = Http::get(env('URL_API_TRANSFER_VERIFY'));
+
+        if($response->status() !== 200 || strtolower($response->json('message')) !== 'autorizado')
+            throw new TransferNoAuthorizedException();
+
         return $next($request);
     }
 }
