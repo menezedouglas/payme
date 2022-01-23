@@ -14,7 +14,7 @@ use App\Repositories\User\UserInterface;
 class Login extends Auth
 {
     /**
-     * User Repositorie Interface
+     * User Repository Interface
      *
      * @var UserInterface $user
      */
@@ -75,6 +75,10 @@ class Login extends Auth
      */
     public function response(): JsonResponse
     {
-        return response()->json(['authorization' => $this->authorization]);
+        return response()->json([
+            'authorization' => $this->authorization,
+            'type' => 'Bearer',
+            'validate' => 3600
+        ]);
     }
 }

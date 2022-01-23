@@ -37,9 +37,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'first_name',
         'last_name',
         'email',
-        'cpf',
-        'cnpj',
-        'user_type_id'
     ];
 
     /**
@@ -48,6 +45,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $hidden = [
+        'cpf',
+        'cnpj',
+        'user_type_id',
         'password',
         'created_at',
         'updated_at',

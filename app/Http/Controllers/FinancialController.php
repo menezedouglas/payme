@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-
 use Illuminate\Http\JsonResponse;
 
 use Illuminate\Support\Facades\DB;
 
 use App\Exceptions\Account\AccountNotFoundException;
-use App\Exceptions\Account\CannotDeleteException;
 use App\Exceptions\Transaction\CannotRollbackTransactionException;
 use App\Exceptions\Transaction\TransactionNotFoundException;
 use App\Exceptions\Transfer\CannotCreateNewTransferException;
@@ -74,7 +71,7 @@ class FinancialController extends Controller
     {
         try {
             return response()->json(
-                auth()->user()->account
+                auth()->user()->account->makeVisible(['balance_value'])
             );
         } catch (\Exception $error) {
             throw new AccountNotFoundException($error);

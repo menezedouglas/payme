@@ -25,13 +25,13 @@ class Account extends Model
      */
     protected $fillable = [
         'user_id',
-        'balance_value'
     ];
 
     /**
      * @var string[]
      */
     protected $hidden = [
+        'balance_value',
         'created_at',
         'updated_at',
         'deleted_at'
