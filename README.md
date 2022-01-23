@@ -174,7 +174,7 @@ Caso esteja com o ``docker`` basta acessar o domínio que você configurou no ``
 
 Se não, rode o comando ``php -S localhost:8000 -t public`` na pasta do projeto para iniciar o servidor.
 
-Se desejar, rode ``vendor/bin/phpunit`` para rodar os testes automatizados da aplicação e certificar-se de que está tudo certo com a ``API``. 
+Se desejar, execute ``vendor/bin/phpunit`` para rodar os testes automatizados da aplicação e certificar-se de que está tudo certo com a ``API``. 
 
 ## Muito bem! O processo foi concluido 🎉
 
