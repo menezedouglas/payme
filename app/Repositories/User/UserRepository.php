@@ -86,7 +86,8 @@ class UserRepository implements UserInterface
         $user->last_name = $data['last_name'];
         $user->email = $data['email'];
         $user->cpf = $data['cpf'];
-        $user->cnpj = array_key_exists('cnpj', $data) ? $data['cnpj'] : null;
+        $user->cnpj = array_key_exists('cnpj', $data) ? ($data['cnpj'] !== '' && $data['cnpj'] ? $data['cnpj'] : null
+        ) : null;
         $user->user_type_id = $userType->id;
         $user->password = Hash::make($data['password']);
 
@@ -129,7 +130,6 @@ class UserRepository implements UserInterface
         $user->user_type_id = $userType->id;
 
         return !!$user->save();
-
     }
 
     /**
@@ -140,7 +140,7 @@ class UserRepository implements UserInterface
      */
     public function delete(int $id): bool
     {
-        if(!$user = $this->find($id))
+        if (!$user = $this->find($id))
             abort(404, 'Não foi possível encontrar o usuário!');
 
         return !!$user->delete();

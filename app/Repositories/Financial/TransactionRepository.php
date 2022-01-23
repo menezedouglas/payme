@@ -52,9 +52,9 @@ class TransactionRepository implements TransactionInterface
      * Create a new transaction
      *
      * @param array $data
-     * @return bool
+     * @return Transaction
      */
-    public function create(array $data): bool
+    public function create(array $data): Transaction
     {
         $transaction = new Transaction();
 
@@ -63,7 +63,9 @@ class TransactionRepository implements TransactionInterface
         $transaction->amount = $data['amount'];
         $transaction->status = 'pendente';
 
-        return !!$transaction->save();
+        $transaction->save();
+
+        return $transaction;
     }
 
     /**

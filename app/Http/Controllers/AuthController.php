@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Exceptions\Auth\LoginException;
+use App\Exceptions\Auth\LogoutException;
 use App\Services\Authentication\Login;
 
 class AuthController extends Controller
@@ -52,6 +53,20 @@ class AuthController extends Controller
 
     public function resetPassword() {}
 
-    public function logout() {}
+    /**
+     * Unauthenticate user
+     *
+     * @return JsonResponse
+     * @throws LogoutException
+     */
+    public function logout(): JsonResponse
+    {
+        try {
+            auth()->logout();
+            return response()->json([]);
+        } catch (\Exception $error) {
+            throw new LogoutException($error);
+        }
+    }
 
 }

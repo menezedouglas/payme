@@ -79,6 +79,7 @@ class UserController extends Controller
 
             return response()->json([]);
         } catch (\Exception $error) {
+            dd($error);
             DB::rollBack();
             throw new CannotCreateUserException($error);
         }
@@ -87,11 +88,11 @@ class UserController extends Controller
     /**
      * Show the authenticated or a specific user
      *
-     * @param int $id
+     * @param int|null $id
      * @return JsonResponse
      * @throws UserNotFoundException
      */
-    public function show(int $id): JsonResponse
+    public function show(?int $id = null): JsonResponse
     {
         try {
             if (!$user = $this->getUser($id))

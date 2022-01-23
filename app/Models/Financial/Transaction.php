@@ -30,6 +30,18 @@ class Transaction extends Model
     ];
 
     /**
+     * Change the status of transaction
+     *
+     * @param string $status
+     * @return bool
+     */
+    public function updateStatus(string $status): bool
+    {
+        $this->status = $status;
+        return !!$this->save();
+    }
+
+    /**
      * Return the payer of this transaction
      *
      * @return BelongsTo

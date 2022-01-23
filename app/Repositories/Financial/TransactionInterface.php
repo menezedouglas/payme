@@ -27,9 +27,9 @@ interface TransactionInterface
      * Create a new transaction
      *
      * @param array $data
-     * @return bool
+     * @return Transaction
      */
-    public function create(array $data): bool;
+    public function create(array $data): Transaction;
 
 
     /**

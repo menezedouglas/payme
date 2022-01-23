@@ -24,6 +24,12 @@ $router->group(['prefix' => 'auth', 'as' => 'auth.'], function () use ($router) 
         'uses' => 'AuthController@login'
     ]);
 
+    $router->delete('', [
+        'as' => 'logout',
+        'uses' => 'AuthController@logout',
+        'middleware' => ['auth:cliente,lojista']
+    ]);
+
 });
 
 $router->group(['prefix' => 'users', 'as' => 'users.'], function () use ($router) {
@@ -71,16 +77,32 @@ $router->group(['prefix' => 'financial', 'as' => 'financial.'], function () use 
         'middleware' => 'auth:cliente,lojista'
     ]);
 
-    $router->post('transfer', [
-        'as' => 'account',
-        'uses' => 'FinancialController@newTransfer',
-        'middleware' => ['auth:cliente', 'transfer']
-    ]);
+    $router->group(['prefix' => 'transaction', 'as' => 'transaction.'], function () use ($router) {
 
-    $router->delete('', [
-        'as' => 'account.delete',
-        'uses' => 'FinancialController@deleteAccount',
-        'middleware' => 'auth:cliente,lojista'
-    ]);
+        $router->get('', [
+            'as' => 'transaction',
+            'uses' => 'FinancialController@transactions',
+            'middleware' => ['auth:cliente,lojista']
+        ]);
+
+        $router->group(['prefix' => 'new', 'as' => 'new.'], function ()  use ($router) {
+
+            $router->post('', [
+                'as' => 'transference',
+                'uses' => 'FinancialController@newTransference',
+                'middleware' => ['auth:cliente', 'transfer']
+            ]);
+
+            // Declare the route for the new transaction here
+
+        });
+
+        $router->delete('', [
+            'as' => 'rollback',
+            'uses' => 'FinancialController@rollbackTransaction',
+            'middleware' => ['auth:cliente', 'transfer']
+        ]);
+
+    });
 
 });
