@@ -79,7 +79,6 @@ class UserController extends Controller
 
             return response()->json([]);
         } catch (\Exception $error) {
-            dd($error);
             DB::rollBack();
             throw new CannotCreateUserException($error);
         }
