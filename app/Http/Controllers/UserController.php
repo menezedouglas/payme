@@ -129,7 +129,7 @@ class UserController extends Controller
             ])->exists())
                 throw new CannotEditUserException(null, 'O CPF informado já está sendo utilizado', 400);
 
-            if($request->input('cnpj')) {
+            if ($request->input('cnpj')) {
                 if ($this->user->where([
                     'cnpj' => $request->input('cnpj'),
                     ['id', '<>', $user->id]
@@ -168,7 +168,12 @@ class UserController extends Controller
     {
         switch ($id) {
             case null:
-                return auth()->user();
+                return $this
+                ->user
+                ->where(['id' => auth()->user()->id])
+                ->with(['type'])
+                ->first()
+                ->makeVisible(['cpf', 'cnpj']);
 
             default:
                 return $this->user->find($id);

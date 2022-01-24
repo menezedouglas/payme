@@ -119,6 +119,12 @@ class FinancialController extends Controller
             $payerAccount = auth()->user()->account;
             $payeeAccount = $payeeUser->account;
 
+            if (
+                AccountRepository::dataToFloat($payerAccount->balance_value) <
+                $request->input('amount')
+            )
+                throw new CannotCreateNewTransferException(null, 'Saldo insuficiente', 400);
+
             /**
              * @var Transaction $transaction
              */
@@ -159,5 +165,4 @@ class FinancialController extends Controller
             throw new CannotRollbackTransactionException($error);
         }
     }
-
 }
